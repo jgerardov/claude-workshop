@@ -38,8 +38,8 @@ export default function ChatAsesor({ perfil, analisis }: { perfil: Perfil; anali
   }
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col rounded-lg border border-neutral-200 bg-white">
-      <div className="max-h-96 space-y-3 overflow-y-auto p-4">
+    <div className="flex flex-col bg-white">
+      <div className="max-h-80 space-y-3 overflow-y-auto p-4">
         {mensajes.map((m, i) => (
           <div key={i} className={m.role === 'user' ? 'text-right' : 'text-left'}>
             <span

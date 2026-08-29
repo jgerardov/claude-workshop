@@ -19,9 +19,9 @@ function systemPrompt(perfil: Perfil, analisis: Analisis) {
 }
 
 export async function POST(req: NextRequest) {
-  const apiKey = process.env.ANTHROPIC_API_KEY
+  const apiKey = process.env.CLAUDE_API
   if (!apiKey) {
-    return NextResponse.json({ error: 'Falta configurar ANTHROPIC_API_KEY en .env.local' }, { status: 500 })
+    return NextResponse.json({ error: 'Falta configurar CLAUDE_API en .env.local' }, { status: 500 })
   }
 
   const body = await req.json().catch(() => null) as { perfil?: Perfil; analisis?: Analisis; mensajes?: ChatMessage[] } | null

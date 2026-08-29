@@ -7,7 +7,6 @@ import OnboardingWizard from '@/components/onboarding/OnboardingWizard'
 import ConectarFuentes from '@/components/fuentes/ConectarFuentes'
 import IntegracionesMock from '@/components/integraciones/IntegracionesMock'
 import ResultadosView from '@/components/resultados/ResultadosView'
-import ChatAsesor from '@/components/chat/ChatAsesor'
 import { analizar } from '@/lib/analysis'
 import { Analisis, FuentesConectadas, Perfil, Usuario } from '@/lib/types'
 
@@ -20,7 +19,6 @@ export default function Home() {
   const [puentes, setPuentes] = useState<string[]>([])
   const [fuentes, setFuentes] = useState<FuentesConectadas | null>(null)
   const [analisis, setAnalisis] = useState<Analisis | null>(null)
-  const [mostrarChat, setMostrarChat] = useState(false)
 
   function handleAutenticado(u: Usuario) {
     setUsuario(u)
@@ -46,7 +44,6 @@ export default function Home() {
     setPuentes([])
     setFuentes(null)
     setAnalisis(null)
-    setMostrarChat(false)
     setPaso('auth')
   }
 
@@ -73,12 +70,7 @@ export default function Home() {
           <IntegracionesMock perfil={perfil} analisis={analisis} fuentes={fuentes} onDone={() => setPaso('resultados')} />
         )}
 
-        {paso === 'resultados' && perfil && analisis && (
-          <div className="space-y-6">
-            <ResultadosView analisis={analisis} onAbrirChat={() => setMostrarChat(true)} />
-            {mostrarChat && <ChatAsesor perfil={perfil} analisis={analisis} />}
-          </div>
-        )}
+        {paso === 'resultados' && perfil && analisis && <ResultadosView perfil={perfil} analisis={analisis} />}
       </main>
     </>
   )

@@ -1,5 +1,6 @@
-import { Analisis } from '@/lib/types'
+import { Analisis, Perfil } from '@/lib/types'
 import { fmtMXN as fmt } from '@/lib/format'
+import ChatBubble from '../chat/ChatBubble'
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -10,7 +11,7 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
   )
 }
 
-export default function ResultadosView({ analisis, onAbrirChat }: { analisis: Analisis; onAbrirChat: () => void }) {
+export default function ResultadosView({ perfil, analisis }: { perfil: Perfil; analisis: Analisis }) {
   const { financiamiento } = analisis
 
   return (
@@ -96,9 +97,7 @@ export default function ResultadosView({ analisis, onAbrirChat }: { analisis: An
 
       <p className="text-xs text-neutral-400">{analisis.disclaimer}</p>
 
-      <button onClick={onAbrirChat} className="w-full rounded-md bg-green-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-600">
-        Hablar con tu asesor
-      </button>
+      <ChatBubble perfil={perfil} analisis={analisis} />
     </div>
   )
 }

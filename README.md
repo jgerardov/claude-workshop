@@ -14,11 +14,11 @@ El código de la app (`app/`, `lib/`, `components/`) implementa el flujo descrit
 
 ```bash
 npm install
-cp .env.local.example .env.local   # y pega tu ANTHROPIC_API_KEY real en ese archivo
+cp .env.local.example .env.local   # y pega tu CLAUDE_API real en ese archivo
 npm run dev
 ```
 
-Abre [http://localhost:3000](http://localhost:3000). El asesor de chat necesita `ANTHROPIC_API_KEY` configurada; sin ella responde con un error legible en vez de fallar.
+Abre [http://localhost:3000](http://localhost:3000). El asesor de chat necesita `CLAUDE_API` configurada; sin ella responde con un error legible en vez de fallar.
 
 Otros comandos útiles:
 
