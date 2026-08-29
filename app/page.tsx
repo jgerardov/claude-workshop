@@ -49,17 +49,8 @@ export default function Home() {
 
   return (
     <>
-      {paso === 'onboarding' && <NavBar />}
+      {paso !== 'auth' && <NavBar usuario={usuario} perfil={perfil} onCerrarSesion={cerrarSesion} />}
       <main className="px-4 py-10">
-        {usuario && paso !== 'auth' && (
-          <div className="mx-auto mb-6 flex max-w-2xl items-center justify-between text-sm text-neutral-500">
-            <span>Hola, {usuario.nombre}</span>
-            <button onClick={cerrarSesion} className="text-neutral-400 underline hover:text-neutral-600">
-              Cerrar sesión
-            </button>
-          </div>
-        )}
-
         {paso === 'auth' && <AuthScreen onAutenticado={handleAutenticado} />}
 
         {paso === 'onboarding' && <OnboardingWizard onComplete={handlePerfilCompleto} />}
@@ -71,7 +62,7 @@ export default function Home() {
         )}
 
         {paso === 'resultados' && perfil && analisis && (
-          <div className="space-y-6">
+          <div className="mx-auto max-w-5xl space-y-6">
             <ResultadosView analisis={analisis} onAbrirChat={() => setMostrarChat(true)} />
             {mostrarChat && <ChatAsesor perfil={perfil} analisis={analisis} />}
           </div>
