@@ -1,3 +1,11 @@
+// Sesión mockeada — no hay backend de auth real en este MVP. Nada se persiste
+// más allá de la pestaña del navegador. Ver components/auth/AuthScreen.tsx.
+export type Usuario = {
+  nombre: string
+  email: string
+  metodo: 'google' | 'correo'
+}
+
 export type Giro = 'comercio' | 'restaurante' | 'servicios_profesionales'
 export type FiguraFiscal = 'PFAE' | 'persona_moral' | 'informal'
 export type ModeloVenta = 'b2b_credito' | 'b2b_contado' | 'b2c_mostrador' | 'ecommerce'
