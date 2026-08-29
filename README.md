@@ -6,6 +6,31 @@ Repositorio de investigación del equipo. Cada persona documenta su punto y todo
 
 ---
 
+## Cómo correr el MVP en desarrollo
+
+El código de la app (`app/`, `lib/`, `components/`) implementa el flujo descrito en [`plan-mvp-hackaton.md`](./plan-mvp-hackaton.md): onboarding del negocio en varios pasos, conexión simulada de fuentes de datos (SAT, bancos, cobros, contable/ERP, registro de ventas), un motor de análisis fiscal y de financiamiento, y un asesor de IA en chat.
+
+**Requisitos:** Node.js 18 o superior, y una API key de Anthropic.
+
+```bash
+npm install
+cp .env.local.example .env.local   # y pega tu ANTHROPIC_API_KEY real en ese archivo
+npm run dev
+```
+
+Abre [http://localhost:3000](http://localhost:3000). El asesor de chat necesita `ANTHROPIC_API_KEY` configurada; sin ella responde con un error legible en vez de fallar.
+
+Otros comandos útiles:
+
+| Comando | Qué hace |
+|---|---|
+| `npm run build` | Compila y valida tipos (TypeScript estricto) sin arrancar el servidor |
+| `npm run start` | Sirve el build de producción generado por `npm run build` |
+
+`.env.local` nunca se sube al repo (está en `.gitignore`); usa `.env.local.example` como plantilla.
+
+---
+
 ## Componentes de la solución
 
 Los ocho componentes definidos en sesión:
