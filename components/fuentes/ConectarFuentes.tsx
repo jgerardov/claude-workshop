@@ -1,12 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { FuenteConectada, FuentesConectadas, Perfil } from '@/lib/types'
+import { FuenteConectada, FuentesConectadas } from '@/lib/types'
 import AgregarFuentePanel from './AgregarFuentePanel'
 
 const CATEGORIAS_MINIMAS = ['fiscal', 'registro']
 
-export default function ConectarFuentes({ perfil, onContinuar }: { perfil: Perfil; onContinuar: (fuentes: FuentesConectadas) => void }) {
+// `puentes` — investigacion/propuesta-guion-onboarding.md, "Cómo se enlaza con
+// las fuentes": cada "no sé" del onboarding se convierte aquí en el motivo
+// concreto para conectar una fuente, no en un catálogo presentado en frío.
+export default function ConectarFuentes({ puentes, onContinuar }: { puentes: string[]; onContinuar: (fuentes: FuentesConectadas) => void }) {
   const [conectadas, setConectadas] = useState<FuentesConectadas>([])
   const [agregando, setAgregando] = useState(false)
 
@@ -22,9 +25,20 @@ export default function ConectarFuentes({ perfil, onContinuar }: { perfil: Perfi
       <div>
         <h1 className="text-2xl font-semibold text-neutral-900">Conecta tus fuentes de datos</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          Agrega una fuente a la vez, RFC {perfil.rfc}. Nada se sincroniza hasta que tú lo conectas aquí — en esta demo la conexión está simulada, no se envía ninguna credencial a un servidor.
+          Agrega una fuente a la vez. Nada se sincroniza hasta que tú lo conectas aquí — en esta demo la conexión está simulada, no se envía ninguna credencial a un servidor.
         </p>
       </div>
+
+      {puentes.length > 0 && (
+        <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+          <p className="text-sm font-medium text-green-800">Por lo que nos dijiste, esto te conviene conectar:</p>
+          <ul className="mt-2 space-y-1 text-sm text-green-800">
+            {puentes.map((p, i) => (
+              <li key={i}>· {p}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {conectadas.length > 0 && (
         <div className="space-y-2">

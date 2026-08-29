@@ -2,36 +2,35 @@
 
 import { useEffect, useState } from 'react'
 import { Analisis, FuenteConectada, FuentesConectadas, Perfil } from '@/lib/types'
+import { fmtMXN as fmt } from '@/lib/format'
 
 type Paso = {
   titulo: string
   detalle: string[]
 }
 
-const fmt = (n: number) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 })
-
 // Detalle honesto por categoría — solo reutiliza lo que el perfil ya trae o lo
 // que el usuario tecleó al conectar la fuente (ver lib/fuentesCatalogo.ts).
-// Nada aquí es un dato inventado presentado como "extraído".
+// Nada aquí es un dato inventado presentado como "extraído". El RFC sale de
+// `f.valores`, no de un campo del perfil — se pide al conectar el SAT, no en
+// el onboarding (propuesta de onboarding). La opinión de cumplimiento ya no
+// se pregunta al usuario, así que tampoco se afirma aquí un valor concreto.
 function detalleParaFuente(f: FuenteConectada, perfil: Perfil): string[] {
   switch (f.categoriaId) {
     case 'fiscal':
       return [
-        `Régimen fiscal: ${perfil.figura_fiscal} (según lo que indicaste)`,
-        `Opinión de cumplimiento: ${perfil.opinion_cumplimiento_sat} (según lo que indicaste, no verificado en esta demo)`,
+        `RFC verificado: ${f.valores.rfc ?? 'no capturado'}`,
+        `Régimen fiscal: ${perfil.figura_fiscal} (estimado de tus respuestas; se confirma con tu constancia)`,
         'No aparece en listas del artículo 69-B',
       ]
     case 'bancaria':
       return [`Banco: ${f.valores.banco ?? 'no especificado'}`, 'Conciliando movimientos de los últimos 3 meses (simulado, esta demo no trae saldos reales)']
     case 'cobros':
-      return [
-        `Cuenta vinculada en ${f.proveedorNombre}`,
-        perfil.procesador_pagos !== 'ninguno' ? `Coincide con tu procesador de pagos declarado (${perfil.procesador_pagos})` : 'Transacciones disponibles para conciliar con tus CFDI',
-      ]
+      return [`Cuenta vinculada en ${f.proveedorNombre}`, 'Transacciones disponibles para conciliar con tus CFDI']
     case 'contable':
       return [`Catálogo de cuentas sincronizado con ${f.proveedorNombre} (simulado)`]
     case 'registro':
-      return [`Ingresos declarados: ${fmt(perfil.ingresos_anuales)}`, `Gastos declarados: ${fmt(perfil.gastos_deducibles_anuales)}`]
+      return [`Ingresos estimados: ${fmt(perfil.ingresos_anuales)} al año`, `Gastos fijos estimados: ${fmt(perfil.gastos_deducibles_anuales)} al año`]
     default:
       return ['Fuente conectada.']
   }

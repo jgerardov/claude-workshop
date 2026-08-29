@@ -35,7 +35,12 @@ export const CATALOGO_FUENTES: CategoriaFuente[] = [
       {
         id: 'sat_constancia',
         nombre: 'SAT — Constancia y Opinión de Cumplimiento',
-        campos: [{ key: 'ciec', label: 'Contraseña CIEC del SAT', tipo: 'password', placeholderDemo: 'DEMO1234' }],
+        // El RFC se pide aquí, no en el onboarding — propuesta de onboarding:
+        // "no se pide una contraseña del SAT en frío", el RFC va junto con ella.
+        campos: [
+          { key: 'rfc', label: 'Tu RFC', tipo: 'text', placeholderDemo: 'XAXX010101000' },
+          { key: 'ciec', label: 'Contraseña CIEC del SAT', tipo: 'password', placeholderDemo: 'DEMO1234' },
+        ],
       },
     ],
   },

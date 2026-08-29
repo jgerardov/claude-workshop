@@ -1,6 +1,5 @@
 import { Analisis } from '@/lib/types'
-
-const fmt = (n: number) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 })
+import { fmtMXN as fmt } from '@/lib/format'
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -34,7 +33,14 @@ export default function ResultadosView({ analisis, onAbrirChat }: { analisis: An
       </Card>
 
       <Card title="Financiamiento">
-        {financiamiento.descalificado ? (
+        {financiamiento.sinNecesidadCredito ? (
+          <div>
+            <p className="font-medium text-neutral-900">No calculamos una recomendación de financiamiento porque nos dijiste que no lo necesitas ahorita.</p>
+            <p className="mt-1 text-neutral-600">
+              Tu diagnóstico (arriba) sigue siendo útil aunque no busques crédito — la mitad de los negocios en México nunca ha pedido financiamiento (ENAFIN 2024). Si eso cambia, vuelve a esta pantalla.
+            </p>
+          </div>
+        ) : financiamiento.descalificado ? (
           <div>
             <p className="font-medium text-amber-700">{financiamiento.motivoDescalificacion}</p>
             <p className="mt-1 text-neutral-600">{financiamiento.redireccion}</p>
@@ -83,7 +89,9 @@ export default function ResultadosView({ analisis, onAbrirChat }: { analisis: An
           </div>
         )}
 
-        <p className="mt-3 border-t border-neutral-100 pt-3 text-xs text-neutral-500">{financiamiento.verificacionSipres}</p>
+        {!financiamiento.sinNecesidadCredito && (
+          <p className="mt-3 border-t border-neutral-100 pt-3 text-xs text-neutral-500">{financiamiento.verificacionSipres}</p>
+        )}
       </Card>
 
       <p className="text-xs text-neutral-400">{analisis.disclaimer}</p>
