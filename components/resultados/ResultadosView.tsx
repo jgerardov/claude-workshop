@@ -1,6 +1,16 @@
 import { Analisis } from '@/lib/types'
+import { RATIO_CAPACIDAD_PAGO_MINIMO, RATIO_GASTOS_ALERTA } from '@/lib/knowledge'
+import { GaugeCapacidadPago, GaugeGastosSobreIngresos, RangoMonto, ResumenFinanciero } from './Graficas'
 
-const fmt = (n: number) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 })
+function IconoResumen() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="13" width="4" height="8" rx="1" />
+      <rect x="10" y="8" width="4" height="13" rx="1" />
+      <rect x="17" y="4" width="4" height="17" rx="1" />
+    </svg>
+  )
+}
 
 function IconoDocumento() {
   return (
@@ -57,10 +67,25 @@ export default function ResultadosView({ analisis, onAbrirChat }: { analisis: An
         <p className="mt-1 text-lg font-medium">{analisis.diagnostico}</p>
       </div>
 
+      <Card icon={<IconoResumen />} title="Resumen financiero">
+        <ResumenFinanciero
+          ingresos={analisis.metricas.ingresosAnuales}
+          gastos={analisis.metricas.gastosAnuales}
+          margen={analisis.metricas.margenAnual}
+          margenPct={analisis.metricas.margenPct}
+        />
+      </Card>
+
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-start">
         <Card icon={<IconoDocumento />} title="Régimen fiscal recomendado">
           <p className="font-medium">{analisis.regimenFiscal.recomendado}</p>
           <p className="mt-1 text-neutral-600">{analisis.regimenFiscal.razon}</p>
+
+          <div className="mt-3 border-t border-neutral-100 pt-3">
+            <p className="mb-1.5 text-xs font-medium text-neutral-500">Gastos deducibles como % de tus ingresos</p>
+            <GaugeGastosSobreIngresos ratioPct={analisis.metricas.ratioGastosIngresosPct} umbralPct={RATIO_GASTOS_ALERTA * 100} />
+          </div>
+
           {analisis.alertasFiscales.length > 0 && (
             <ul className="mt-3 space-y-1 border-t border-neutral-100 pt-3 text-neutral-700">
               {analisis.alertasFiscales.map((a, i) => (
@@ -101,9 +126,18 @@ export default function ResultadosView({ analisis, onAbrirChat }: { analisis: An
                 </div>
               )}
 
-              <p className="border-t border-neutral-100 pt-3">
-                Rango estimado de monto autorizable: <strong className="font-semibold">{fmt(financiamiento.estimadoBajoMxn)} – {fmt(financiamiento.estimadoAltoMxn)}</strong> MXN. Es una estimación, no una oferta.
-              </p>
+              <div className="border-t border-neutral-100 pt-3">
+                <p className="mb-1.5 text-xs font-medium text-neutral-500">Rango estimado de monto autorizable</p>
+                <RangoMonto bajo={financiamiento.estimadoBajoMxn} alto={financiamiento.estimadoAltoMxn} />
+                <p className="mt-1.5 text-xs text-neutral-400">Es una estimación, no una oferta.</p>
+              </div>
+
+              {financiamiento.ratioCapacidadPago !== undefined && (
+                <div className="border-t border-neutral-100 pt-3">
+                  <p className="mb-1.5 text-xs font-medium text-neutral-500">Capacidad de pago estimada (flujo libre ÷ pago mensual)</p>
+                  <GaugeCapacidadPago ratio={financiamiento.ratioCapacidadPago} minimo={RATIO_CAPACIDAD_PAGO_MINIMO} />
+                </div>
+              )}
 
               {financiamiento.advertenciaMercadoCredito && (
                 <p className="rounded bg-amber-50 p-2 text-amber-800">⚠️ Mercado Crédito es de las opciones más caras del catálogo: tasa anual promedio publicada de 82.1%.</p>

@@ -1,30 +1,42 @@
-import { Analisis, Financiamiento, Perfil, ProveedorRecomendado, RegimenFiscal } from './types'
-import { FECHA_DE_DATOS, GIRO_LABELS, PROVEEDORES, SIPRES_URL } from './knowledge'
+import { Analisis, Financiamiento, Metricas, Perfil, ProveedorRecomendado, RegimenFiscal } from './types'
+import { FECHA_DE_DATOS, GIRO_LABELS, PROVEEDORES, RATIO_CAPACIDAD_PAGO_MINIMO, RATIO_GASTOS_ALERTA, RESICO_TOPE_MXN, SIPRES_URL } from './knowledge'
+
+// Única fuente de verdad para los números derivados del perfil — tanto
+// regimenFiscal() como la vista de resultados (gráficas) parten de aquí,
+// para no calcular el mismo ratio dos veces con la posibilidad de divergir.
+function calcularMetricas(perfil: Perfil): Metricas {
+  const { ingresos_anuales: ingresosAnuales, gastos_deducibles_anuales: gastosAnuales } = perfil
+  const margenAnual = ingresosAnuales - gastosAnuales
+  const margenPct = ingresosAnuales > 0 ? (margenAnual / ingresosAnuales) * 100 : 0
+  const ratioGastosIngresosPct = ingresosAnuales > 0 ? (gastosAnuales / ingresosAnuales) * 100 : 0
+  const pctDelTopeResico = (ingresosAnuales / RESICO_TOPE_MXN) * 100
+
+  return { ingresosAnuales, gastosAnuales, margenAnual, margenPct, ratioGastosIngresosPct, topeResicoMxn: RESICO_TOPE_MXN, pctDelTopeResico }
+}
 
 // estrategias-fiscales-por-rubro-mexico.md §1: RESICO PF hasta $3.5M anuales.
 // §3: si los gastos deducibles reales son altos frente a los ingresos, comparar
 // contra el régimen con deducciones aunque no se rebase el tope de RESICO.
-function regimenFiscal(perfil: Perfil): RegimenFiscal {
-  const { ingresos_anuales, gastos_deducibles_anuales } = perfil
-  const ratioGastos = ingresos_anuales > 0 ? gastos_deducibles_anuales / ingresos_anuales : 0
+function regimenFiscal(perfil: Perfil, metricas: Metricas): RegimenFiscal {
+  const { ingresosAnuales, ratioGastosIngresosPct } = metricas
 
-  if (ingresos_anuales > 3_500_000) {
+  if (ingresosAnuales > RESICO_TOPE_MXN) {
     return {
       recomendado: 'Régimen de Actividades Empresariales y Profesionales (o Régimen General si es persona moral)',
-      razon: 'Ingresos anuales por encima del tope de RESICO PF de $3,500,000 MXN (estrategias-fiscales-por-rubro-mexico.md §1).',
+      razon: `Ingresos anuales por encima del tope de RESICO PF de ${RESICO_TOPE_MXN.toLocaleString('es-MX')} MXN (estrategias-fiscales-por-rubro-mexico.md §1).`,
     }
   }
 
-  if (ratioGastos > 0.4) {
+  if (ratioGastosIngresosPct > RATIO_GASTOS_ALERTA * 100) {
     return {
       recomendado: 'Comparar RESICO PF vs. Régimen de Actividades Empresariales y Profesionales',
-      razon: `Tus gastos deducibles equivalen a ${Math.round(ratioGastos * 100)}% de tus ingresos — con deducciones reales tan altas, el régimen con deducciones puede convenir más que la tasa reducida de RESICO (estrategias-fiscales-por-rubro-mexico.md §3).`,
+      razon: `Tus gastos deducibles equivalen a ${Math.round(ratioGastosIngresosPct)}% de tus ingresos — con deducciones reales tan altas, el régimen con deducciones puede convenir más que la tasa reducida de RESICO (estrategias-fiscales-por-rubro-mexico.md §3).`,
     }
   }
 
   return {
     recomendado: 'RESICO Personas Físicas',
-    razon: 'Ingresos dentro del tope de $3,500,000 MXN anuales y gastos deducibles bajos frente al ingreso: la tasa simplificada de 1%-2.5% sobre flujo de efectivo cobrado conviene más que llevar deducciones (estrategias-fiscales-por-rubro-mexico.md §1).',
+    razon: `Ingresos dentro del tope de ${RESICO_TOPE_MXN.toLocaleString('es-MX')} MXN anuales y gastos deducibles bajos frente al ingreso: la tasa simplificada de 1%-2.5% sobre flujo de efectivo cobrado conviene más que llevar deducciones (estrategias-fiscales-por-rubro-mexico.md §1).`,
   }
 }
 
@@ -78,7 +90,7 @@ function capacidadDePago(perfil: Perfil) {
   const pagoMensualEstimado = perfil.monto_requerido / 12
   if (pagoMensualEstimado <= 0) return { ratio: undefined, advertencia: false }
   const ratio = flujoLibreMensual / pagoMensualEstimado
-  return { ratio, advertencia: ratio < 1.25 }
+  return { ratio, advertencia: ratio < RATIO_CAPACIDAD_PAGO_MINIMO }
 }
 
 function proveedor(id: keyof typeof PROVEEDORES, razon: string): ProveedorRecomendado {
@@ -166,11 +178,13 @@ function diagnostico(perfil: Perfil): string {
 }
 
 export function analizar(perfil: Perfil): Analisis {
+  const metricas = calcularMetricas(perfil)
   return {
     diagnostico: diagnostico(perfil),
-    regimenFiscal: regimenFiscal(perfil),
+    regimenFiscal: regimenFiscal(perfil, metricas),
     alertasFiscales: alertasFiscalesGiro(perfil),
     financiamiento: financiamiento(perfil),
+    metricas,
     disclaimer: `Datos vigentes a ${FECHA_DE_DATOS}; verifícalos con el proveedor. Esto es información, no asesoría financiera.`,
   }
 }

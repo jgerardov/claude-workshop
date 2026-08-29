@@ -76,10 +76,24 @@ export type RegimenFiscal = {
   razon: string
 }
 
+// Derivadas directamente de los números que el usuario declaró en el perfil —
+// nada aquí se inventa ni proyecta; son las mismas cifras que ya alimentan
+// regimenFiscal() y financiamiento(), expuestas para poder graficarlas.
+export type Metricas = {
+  ingresosAnuales: number
+  gastosAnuales: number
+  margenAnual: number
+  margenPct: number
+  ratioGastosIngresosPct: number
+  topeResicoMxn: number
+  pctDelTopeResico: number
+}
+
 export type Analisis = {
   diagnostico: string
   regimenFiscal: RegimenFiscal
   alertasFiscales: string[]
   financiamiento: Financiamiento
+  metricas: Metricas
   disclaimer: string
 }

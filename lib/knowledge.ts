@@ -4,6 +4,16 @@
 
 export const FECHA_DE_DATOS = '2026-08-29'
 
+// estrategias-fiscales-por-rubro-mexico.md §1 — tope de ingresos anuales de RESICO Personas Físicas
+export const RESICO_TOPE_MXN = 3_500_000
+
+// estrategias-fiscales-por-rubro-mexico.md §3 — a partir de este % de gastos deducibles
+// sobre ingresos, comparar RESICO contra el régimen con deducciones deja de ser opcional
+export const RATIO_GASTOS_ALERTA = 0.4
+
+// fintech.md §5 — capacidad de pago: por debajo de este ratio, el proveedor probablemente reduce el monto
+export const RATIO_CAPACIDAD_PAGO_MINIMO = 1.25
+
 export const GIRO_LABELS: Record<string, string> = {
   comercio: 'Comercio al por menor',
   restaurante: 'Restaurante / alimentos',
