@@ -18,6 +18,22 @@ export const GIRO_LABELS: Record<string, string> = {
   comercio: 'Comercio al por menor',
   restaurante: 'Restaurante / alimentos',
   servicios_profesionales: 'Servicios profesionales',
+  otro: 'Otro giro',
+}
+
+export const NECESIDAD_LABELS: Record<string, string> = {
+  capital_trabajo: 'comprar más mercancía o material',
+  gasto_operativo: 'pagar los gastos del mes',
+  activo_fijo: 'una máquina, equipo o local',
+  deficit_recurrente: 'cubrir un faltante que se repite cada mes',
+  solo_entender: 'entender mejor tu negocio, no pedir crédito',
+}
+
+export const MODELO_VENTA_LABELS: Record<string, string> = {
+  b2c_mostrador: 'ventas de mostrador',
+  b2b_contado: 'ventas a otros negocios de contado',
+  b2b_credito: 'ventas a otros negocios a crédito',
+  ecommerce: 'ventas por internet',
 }
 
 // fintech.md §3 — solo los 4 proveedores del alcance recortado del MVP (plan-mvp-hackaton.md §7)

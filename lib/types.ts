@@ -6,17 +6,23 @@ export type Usuario = {
   metodo: 'google' | 'correo'
 }
 
-export type Giro = 'comercio' | 'restaurante' | 'servicios_profesionales'
+// 'otro' — investigacion/propuesta-guion-onboarding.md pregunta 1: el MVP solo
+// tiene reglas fiscales para los 3 giros de siempre, pero la pregunta ofrece
+// "otra cosa" en vez de forzar una respuesta que no aplica.
+export type Giro = 'comercio' | 'restaurante' | 'servicios_profesionales' | 'otro'
 export type FiguraFiscal = 'PFAE' | 'persona_moral' | 'informal'
 export type ModeloVenta = 'b2b_credito' | 'b2b_contado' | 'b2c_mostrador' | 'ecommerce'
-export type Necesidad = 'capital_trabajo' | 'liquidez_cartera' | 'gasto_operativo' | 'activo_fijo'
+// 'deficit_recurrente' y 'solo_entender' — propuesta pregunta 8, las dos
+// opciones que no existían antes y son las más importantes del guion.
+export type Necesidad = 'capital_trabajo' | 'gasto_operativo' | 'activo_fijo' | 'deficit_recurrente' | 'solo_entender'
 export type ProcesadorPagos = 'mercado_pago' | 'clip' | 'otro' | 'ninguno'
 export type PlataformaDigital = 'rappi_didi_ubereats' | 'marketplace' | 'ninguno'
 export type BuroEstatus = 'limpio' | 'atrasos_menores' | 'moroso' | 'desconocido'
 export type OpinionCumplimiento = 'positiva' | 'negativa' | 'desconocida'
 
 export type Perfil = {
-  rfc: string
+  // Sin `rfc` aquí: la propuesta lo elimina del onboarding — se pide junto con
+  // la contraseña CIEC al conectar el SAT (lib/fuentesCatalogo.ts), no en frío.
   giro: Giro
   figura_fiscal: FiguraFiscal
   antiguedad_meses: number
@@ -30,6 +36,10 @@ export type Perfil = {
   vende_por_plataforma_digital?: PlataformaDigital
   rfc_registrado_en_plataforma?: boolean
   buro_estatus: BuroEstatus
+  // Siempre 'desconocida': la propuesta elimina esta pregunta del onboarding
+  // (se lee de la Constancia al conectar el SAT, no se pregunta — ver
+  // "Pregunta eliminada" en la propuesta). El campo se conserva para cuando
+  // exista una conexión real al SAT que sí pueda resolverlo.
   opinion_cumplimiento_sat: OpinionCumplimiento
 }
 
@@ -59,6 +69,10 @@ export type Financiamiento = {
   descalificado: boolean
   motivoDescalificacion?: string
   redireccion?: string
+  // Propuesta pregunta 8, opción "no necesito dinero" — no es un rechazo, es
+  // una elección del usuario. Se renderiza distinto a `descalificado` (sin
+  // tono de advertencia) en ResultadosView.
+  sinNecesidadCredito: boolean
   primaria: ProveedorRecomendado | null
   alternativas: ProveedorRecomendado[]
   advertenciaMercadoCredito: boolean

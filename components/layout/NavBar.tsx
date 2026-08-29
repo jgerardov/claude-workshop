@@ -1,16 +1,13 @@
 import BrandMark from '@/components/brand/BrandMark'
 import { Perfil, Usuario } from '@/lib/types'
-
-const GIRO_LABELS: Record<Perfil['giro'], string> = {
-  comercio: 'Comercio al por menor',
-  restaurante: 'Restaurante / alimentos',
-  servicios_profesionales: 'Servicios profesionales',
-}
+import { GIRO_LABELS } from '@/lib/knowledge'
 
 // guia-de-marca.md §3/§5 — Midnight Navy para headers y navegación.
 // Visible en todo el flujo salvo la pantalla de auth (que ya trae su propia
-// marca centrada). Una vez que hay perfil, muestra el giro y RFC — refuerza
-// que la app "ya sabe quién eres" en vez de reiniciar el contexto en cada paso.
+// marca centrada). Una vez que hay perfil, muestra el giro — refuerza que la
+// app "ya sabe quién eres" en vez de reiniciar el contexto en cada paso.
+// Sin RFC: el onboarding ya no lo pregunta (se captura al conectar el SAT,
+// ver lib/fuentesCatalogo.ts), así que Perfil no lo trae en esta etapa del flujo.
 export default function NavBar({
   usuario,
   perfil,
@@ -32,8 +29,6 @@ export default function NavBar({
           {perfil && (
             <div className="hidden items-center gap-2 rounded-full bg-white/10 px-3 py-1 sm:flex">
               <span className="text-xs font-medium text-white/90">{GIRO_LABELS[perfil.giro]}</span>
-              <span className="text-white/30">·</span>
-              <span className="text-xs text-white/60">{perfil.rfc}</span>
             </div>
           )}
           {usuario && (

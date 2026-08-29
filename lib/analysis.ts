@@ -1,5 +1,15 @@
 import { Analisis, Financiamiento, Metricas, Perfil, ProveedorRecomendado, RegimenFiscal } from './types'
-import { FECHA_DE_DATOS, GIRO_LABELS, PROVEEDORES, RATIO_CAPACIDAD_PAGO_MINIMO, RATIO_GASTOS_ALERTA, RESICO_TOPE_MXN, SIPRES_URL } from './knowledge'
+import {
+  FECHA_DE_DATOS,
+  GIRO_LABELS,
+  MODELO_VENTA_LABELS,
+  NECESIDAD_LABELS,
+  PROVEEDORES,
+  RATIO_CAPACIDAD_PAGO_MINIMO,
+  RATIO_GASTOS_ALERTA,
+  RESICO_TOPE_MXN,
+  SIPRES_URL,
+} from './knowledge'
 
 // Única fuente de verdad para los números derivados del perfil — tanto
 // regimenFiscal() como la vista de resultados (gráficas) parten de aquí,
@@ -55,10 +65,15 @@ function alertasFiscalesGiro(perfil: Perfil): string[] {
   if (perfil.giro === 'restaurante') {
     alertas.push('El alimento preparado lleva 16% de IVA siempre — no existe la tasa 0% "para llevar", ni en mostrador, domicilio o autoservicio.')
     if (perfil.vende_por_plataforma_digital === 'rappi_didi_ubereats') {
+      // No se pregunta si el RFC está registrado en la app (propuesta de
+      // onboarding) — sin ese dato no afirmamos una retención específica,
+      // mostramos las dos y cuál depende de qué.
       alertas.push(
-        perfil.rfc_registrado_en_plataforma
-          ? 'Con RFC registrado en la app de entrega, la retención es de 2.1% ISR + 8% IVA sobre cada venta.'
-          : 'Sin RFC registrado en la app de entrega, la retención sube a 20% ISR + 16% IVA — registrar el RFC en la plataforma es la primera optimización disponible.'
+        perfil.rfc_registrado_en_plataforma === undefined
+          ? 'Vendes por app de reparto: si tu RFC está registrado en la app, la retención es 2.1% ISR + 8% IVA; si no, sube a 20% ISR + 16% IVA. Vale la pena confirmar cuál te aplica.'
+          : perfil.rfc_registrado_en_plataforma
+            ? 'Con RFC registrado en la app de entrega, la retención es de 2.1% ISR + 8% IVA sobre cada venta.'
+            : 'Sin RFC registrado en la app de entrega, la retención sube a 20% ISR + 16% IVA — registrar el RFC en la plataforma es la primera optimización disponible.'
       )
     }
   }
@@ -68,6 +83,10 @@ function alertasFiscalesGiro(perfil: Perfil): string[] {
     if (porPlataforma) {
       alertas.push('Prestar el servicio a través de una plataforma digital implica una retención del 2.5% de ISR sobre el bruto desde 2026.')
     }
+  }
+
+  if (perfil.giro === 'otro') {
+    alertas.push('Para tu giro específico todavía no tenemos alertas fiscales especializadas — te recomendamos revisar las particularidades de tu actividad con un contador.')
   }
 
   return alertas
@@ -105,14 +124,62 @@ function financiamiento(perfil: Perfil): Financiamiento {
   const { ratio, advertencia: advertenciaCapacidadPago } = capacidadDePago(perfil)
   const verificacionSipres = `Verifica la razón social exacta del proveedor en el SIPRES de CONDUSEF (${SIPRES_URL}) antes de firmar.`
 
+  // fintech.md §8 — "NO recomendar deuda en absoluto si el usuario describe el
+  // crédito para cubrir un déficit operativo recurrente". Esta regla faltaba
+  // en el motor (propuesta de onboarding, sección "La regla que falta").
+  // Redactada en voz de marca: Dato → Contexto → Acción, sin decidir por el
+  // usuario. Va antes que los descalificadores duros: no recomendar deuda
+  // aquí no depende de si calificarías para ella.
+  if (perfil.necesidad === 'deficit_recurrente') {
+    return {
+      descalificado: true,
+      motivoDescalificacion: 'Un crédito para cubrir los gastos del mes se paga con el dinero del mes siguiente.',
+      redireccion:
+        'Cuando el hueco es del mes, suele repetirse — y entonces el crédito se vuelve parte del gasto fijo. El 25.6% de las empresas que se financiaron usó el dinero para pagar otros créditos (ENAPROCE 2018). Antes de endeudarte, hay tres cosas que podrías revisar primero: renegociar plazos con tus proveedores, adelantar el cobro de las facturas que ya emitiste, o mirar dónde se está yendo el gasto.',
+      sinNecesidadCredito: false,
+      primaria: null,
+      alternativas: [],
+      advertenciaMercadoCredito: false,
+      advertenciaBuroMoroso: false,
+      advertenciaCumplimientoNegativo: perfil.opinion_cumplimiento_sat === 'negativa',
+      estimadoBajoMxn: bajo,
+      estimadoAltoMxn: alto,
+      ratioCapacidadPago: ratio,
+      advertenciaCapacidadPago,
+      verificacionSipres,
+    }
+  }
+
+  // Propuesta de onboarding, pregunta 8 — "no necesito dinero, solo quiero
+  // entender mi negocio". No es un rechazo: es la mitad del mercado que nunca
+  // ha pedido financiamiento (ENAFIN 2024, 50%). Se renderiza sin tono de
+  // advertencia en ResultadosView.
+  if (perfil.necesidad === 'solo_entender') {
+    return {
+      descalificado: false,
+      sinNecesidadCredito: true,
+      primaria: null,
+      alternativas: [],
+      advertenciaMercadoCredito: false,
+      advertenciaBuroMoroso: false,
+      advertenciaCumplimientoNegativo: false,
+      estimadoBajoMxn: bajo,
+      estimadoAltoMxn: alto,
+      ratioCapacidadPago: undefined,
+      advertenciaCapacidadPago: false,
+      verificacionSipres,
+    }
+  }
+
   // Descalificadores duros — fintech.md §8, se evalúan antes que cualquier regla.
   if (perfil.antiguedad_meses < 12 || perfil.figura_fiscal === 'informal') {
     return {
       descalificado: true,
       motivoDescalificacion: perfil.figura_fiscal === 'informal'
-        ? 'Negocio informal: ninguna fintech de este catálogo aplica.'
+        ? 'Negocio informal, o todavía no confirmado si factura: ninguna fintech de este catálogo aplica.'
         : `Antigüedad de ${perfil.antiguedad_meses} meses, por debajo del mínimo de 12 requerido por todo el catálogo.`,
       redireccion: 'Redirigir a programas de gobierno (NAFIN, FOJAL u otro fondo estatal) o a regularización fiscal como PFAE ante el SAT como primer paso.',
+      sinNecesidadCredito: false,
       primaria: null,
       alternativas: [],
       advertenciaMercadoCredito: false,
@@ -159,6 +226,7 @@ function financiamiento(perfil: Perfil): Financiamiento {
 
   return {
     descalificado: false,
+    sinNecesidadCredito: false,
     primaria,
     alternativas,
     advertenciaMercadoCredito: aplicaMercadoCredito,
@@ -172,9 +240,10 @@ function financiamiento(perfil: Perfil): Financiamiento {
   }
 }
 
-// fintech.md §9 [1] — plantilla de diagnóstico en una frase
+// fintech.md §9 [1] — plantilla de diagnóstico en una frase, en el vocabulario
+// del usuario (propuesta de onboarding), no en el de los enums internos.
 function diagnostico(perfil: Perfil): string {
-  return `Por tu perfil — ${perfil.figura_fiscal}, ${perfil.antiguedad_meses} meses operando en ${GIRO_LABELS[perfil.giro]}, ${perfil.modelo_venta} — tu necesidad se parece más a ${perfil.necesidad.replace('_', ' ')}.`
+  return `Tienes un negocio de ${GIRO_LABELS[perfil.giro].toLowerCase()} con ${MODELO_VENTA_LABELS[perfil.modelo_venta]}. Por lo que nos contaste, esto se trata de ${NECESIDAD_LABELS[perfil.necesidad]}.`
 }
 
 export function analizar(perfil: Perfil): Analisis {

@@ -2,7 +2,8 @@
 // calculadas en lib/analysis.ts a partir de lo que el usuario declaró — nada se inventa ni
 // se proyecta para "verse mejor". Ver Metricas en lib/types.ts.
 
-const fmt = (n: number) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 })
+import { fmtMXN as fmt } from '@/lib/format'
+
 const fmtCompacto = (n: number) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN', notation: 'compact', maximumFractionDigits: 1 })
 
 export function ResumenFinanciero({ ingresos, gastos, margen, margenPct }: { ingresos: number; gastos: number; margen: number; margenPct: number }) {

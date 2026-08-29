@@ -17,6 +17,7 @@ export default function Home() {
   const [paso, setPaso] = useState<Paso>('auth')
   const [usuario, setUsuario] = useState<Usuario | null>(null)
   const [perfil, setPerfil] = useState<Perfil | null>(null)
+  const [puentes, setPuentes] = useState<string[]>([])
   const [fuentes, setFuentes] = useState<FuentesConectadas | null>(null)
   const [analisis, setAnalisis] = useState<Analisis | null>(null)
   const [mostrarChat, setMostrarChat] = useState(false)
@@ -26,8 +27,9 @@ export default function Home() {
     setPaso('onboarding')
   }
 
-  function handlePerfilCompleto(p: Perfil) {
+  function handlePerfilCompleto(p: Perfil, puentesCalculados: string[]) {
     setPerfil(p)
+    setPuentes(puentesCalculados)
     setPaso('fuentes')
   }
 
@@ -41,6 +43,7 @@ export default function Home() {
   function cerrarSesion() {
     setUsuario(null)
     setPerfil(null)
+    setPuentes([])
     setFuentes(null)
     setAnalisis(null)
     setMostrarChat(false)
@@ -55,7 +58,7 @@ export default function Home() {
 
         {paso === 'onboarding' && <OnboardingWizard onComplete={handlePerfilCompleto} />}
 
-        {paso === 'fuentes' && perfil && <ConectarFuentes perfil={perfil} onContinuar={handleFuentesConectadas} />}
+        {paso === 'fuentes' && perfil && <ConectarFuentes puentes={puentes} onContinuar={handleFuentesConectadas} />}
 
         {paso === 'mock' && perfil && analisis && fuentes && (
           <IntegracionesMock perfil={perfil} analisis={analisis} fuentes={fuentes} onDone={() => setPaso('resultados')} />
