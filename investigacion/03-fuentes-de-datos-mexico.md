@@ -1,7 +1,7 @@
 # Catálogo de fuentes de datos comunes en emprendimientos y pymes — México
 
 > **Punto de investigación 03 de 05** · Autora: Cristina Astaiza · País: México
-> **Fecha:** 29 de agosto de 2026 · **Versión:** v2 — cruzada con la investigación 01
+> **Fecha:** 29 de agosto de 2026 · **Versión:** v3 — cruzada con las investigaciones 01, 02 y 05
 > **Método:** investigación documental con verificación de URLs por petición HTTP real
 > **Versión maquetada:** https://claude.ai/code/artifact/a9d44fac-9226-4fdb-89be-ba2aad0c182f
 
@@ -22,6 +22,7 @@ De dónde salen los números de una pyme mexicana: qué fuentes existen, cuáles
 9. [Plantilla de ficha de fuente](#9-plantilla-de-ficha-de-fuente)
 10. [Registro de verificación](#10-registro-de-verificación)
 11. [Cruce con el journey map de asesoría de financiamiento](#11-cruce-con-el-journey-map-de-asesoría-de-financiamiento)
+12. [Cruce con la base de conocimiento de financiamiento](#12-cruce-con-la-base-de-conocimiento-de-financiamiento)
 
 ---
 
@@ -176,6 +177,8 @@ Ocho capas, ordenadas de la más universal a la más artesanal.
 | **Constancia de Situación Fiscal** | Régimen vigente, actividades económicas registradas, domicilio | RFC + contraseña | Vigente | Bajo |
 | **Opinión de cumplimiento (32-D)** | Semáforo positivo o negativo ante el SAT | RFC + contraseña | Vigente | Bajo |
 | **DIOT y declaraciones** | Operaciones con terceros; ISR e IVA declarados | RFC + contraseña | 5 años | Medio |
+| **Catálogo de actividades económicas** — Anexo 6 de la RMF | Los 20 sectores y su desglose hasta clase, base para identificar el giro del negocio. Vigente: RMF 2026, DOF 28 dic 2025 | Ninguna | Vigente | Bajo |
+| **Listas del artículo 69-B** (EFOS y EDOS) | Contribuyentes con operaciones presuntamente inexistentes. **Aparecer aquí descalifica al negocio ante cualquier otorgante de crédito** | Ninguna | Histórico | Bajo |
 
 **Detalle técnico del web service.** La versión vigente es la **1.5, en operación desde el 30 de mayo de 2025**. El flujo encadena cuatro servicios: *autenticación* con e.firma, *solicitud* con rango de fechas y tipo (emitidos o recibidos, CFDI o metadata), *verificación* de que el paquete esté listo, y *descarga*. Existen librerías open source maduras que ya lo implementan — [`phpcfdi/sat-ws-descarga-masiva`](https://github.com/phpcfdi/sat-ws-descarga-masiva) en PHP y [`ARSoftware.Cfdi.DescargaMasiva`](https://github.com/AndresRamos/ARSoftware.Cfdi.DescargaMasiva) en .NET.
 
@@ -348,9 +351,19 @@ Lo que este catálogo no resuelve, dicho antes de que aparezca en desarrollo.
 
 La decisión no se puede tomar sin el dato de [7.3](#7-huecos-y-riesgos). **Cotizar es el desbloqueo.**
 
-### 8.2 Qué taxonomía manda: SCIAN o SAT
+### 8.2 ~~Qué taxonomía manda: SCIAN o SAT~~ → Resuelta: comparten raíz
 
-Los Censos Económicos y el DENUE clasifican con **SCIAN 2023**, que es lo que permite comparar un negocio contra su sector. Pero lo que el negocio tiene realmente registrado es su **actividad económica ante el SAT**, que es otro árbol. Hay que elegir una como maestra y mapear la otra; si no, el catálogo por giro nunca cuadrará con la constancia fiscal del cliente. *Decisión compartida con la investigación de giros de negocio.*
+> **Corrección (v3).** La versión anterior de este documento planteaba SCIAN y el catálogo del SAT como dos árboles rivales entre los que había que elegir. **La investigación 02 demuestra que no lo son:** el catálogo de actividades económicas del SAT vive en el **Anexo 6 de la Resolución Miscelánea Fiscal** y **se basa en el SCIAN** del INEGI. Comparten raíz y estructura jerárquica: sector → subsector → rama → subrama → clase, agrupados en **20 sectores económicos**.
+
+Lo que queda pendiente no es elegir, es **mapear y verificar la equivalencia código a código** entre el Anexo 6 vigente (RMF 2026, DOF 28 dic 2025) y SCIAN 2023, ya que la granularidad y las claves no son necesariamente idénticas.
+
+Tres consecuencias para el diseño:
+
+1. **La actividad del cliente se puede leer, no preguntar.** Está en su Constancia de Situación Fiscal (capa 5.1). Y cuando el negocio declara varias actividades, el SAT ya define cuál manda: la **preponderante** es la de mayor porcentaje de ingresos; si el negocio aún no tiene ingresos, la que ocupe más personal.
+2. **El benchmarking hereda el criterio del SCIAN, que es de oferta y no de demanda.** Dos negocios caen en la misma clase cuando tienen **procesos de producción similares** —mismos insumos, tecnología, especialización del personal—, no porque atiendan al mismo tipo de cliente. Para comparar estructura de costos es lo correcto; para comparar mercado o ticket promedio, es insuficiente y hay que decirlo.
+3. **Existe un simulador oficial del SAT** del cuestionario de actividades económicas y obligaciones fiscales, gratuito, útil para el componente de estrategia fiscal.
+
+*Detalle completo en la investigación 02.*
 
 ### 8.3 Qué preguntarle al cliente del proyecto
 
@@ -443,9 +456,44 @@ Este catálogo es la infraestructura del recorrido que documenta la **investigac
 
 ### 11.3 Lo que este catálogo le pide a las otras investigaciones
 
-- **A giros de negocio:** definir si la taxonomía maestra es SCIAN 2023 o el catálogo de actividades del SAT — [decisión 8.2](#82-qué-taxonomía-manda-scian-o-sat).
-- **A fintechs prestamistas:** qué datos exige concretamente cada prestamista para otorgar, para dimensionar el paquete mínimo de scoring.
+- ~~**A giros de negocio:** definir la taxonomía maestra.~~ ✅ **Resuelto por la investigación 02** — ver [decisión 8.2](#82-qué-taxonomía-manda-scian-o-sat). Queda pendiente el mapeo código a código entre el Anexo 6 de la RMF 2026 y SCIAN 2023.
+- ~~**A fintechs prestamistas:** qué datos exige cada prestamista.~~ ✅ **Resuelto por la investigación 05** — ver [sección 12](#12-cruce-con-la-base-de-conocimiento-de-financiamiento).
 - **A estrategia fiscal:** qué campos de la constancia y de las declaraciones se necesitan realmente, para no pedirle al usuario más credenciales de las indispensables.
+
+---
+
+## 12. Cruce con la base de conocimiento de financiamiento
+
+La **investigación 05** ([`fintech.md`](../fintech.md)) es el primer consumidor directo de este catálogo, y la coincidencia es casi campo por campo.
+
+### 12.1 Su modelo de datos de entrada sale de estas capas
+
+Cada campo `requerido` de su perfil de negocio tiene una fuente identificada aquí:
+
+| Campo del perfil | De dónde sale | Capa |
+|---|---|---|
+| `facturacion_anual` — «últimos 12 meses de CFDI emitidos» | Descarga masiva de CFDI | `5.1` |
+| `antiguedad_meses` — «meses desde inicio de operaciones facturando» | Primer CFDI emitido · Constancia de Situación Fiscal | `5.1` |
+| `figura_fiscal` — PFAE, persona moral, informal | Constancia de Situación Fiscal | `5.1` |
+| `opinion_cumplimiento_sat` | Opinión de cumplimiento 32-D | `5.1` |
+| `buro_estatus` | Buró de Crédito · Círculo de Crédito | `5.6` |
+| `procesador_pagos` — Mercado Pago, Clip | Conectores de POS y pasarelas | `5.3` |
+| `dias_credito_otorgado` · `concentracion_clientes` · `calidad_pagadores` | Derivables del análisis de CFDI emitidos por receptor | `5.1` |
+| `modelo_venta` | Derivable del cruce CFDI + POS | `5.1` `5.3` |
+
+Su sección 6 lo dice sin rodeos: *«las fintech aprueban en 24 a 72 horas porque analizan CFDI, movimientos bancarios y datos del SAT en tiempo real»*, y ordena las variables de decisión así: volumen y consistencia de facturación de 12 meses, antigüedad operativa, calidad y concentración de clientes, buró, comportamiento transaccional en plataforma y cumplimiento fiscal. **Son exactamente las capas 5.1, 5.6 y 5.3.**
+
+### 12.2 Tres cosas que confirma o corrige
+
+**Confirma el hallazgo 3 y baja su riesgo.** El formulario de Konfío pide **contraseña CIEC del SAT**, no e.firma. El mercado ya opera con RFC + CIEC como credencial estándar para leer facturación, lo que refuerza la ruta «comprar» de la [decisión 8.1](#81-construir-o-comprar-la-capa-fiscal): no somos los únicos que pediríamos esa credencial, es la práctica establecida.
+
+**Aporta una fuente que faltaba en este catálogo:** las **listas del artículo 69-B** del SAT. Su checklist exige *«no aparecer en listas del artículo 69-B»* como criterio de autorización. Ya quedó incorporada a la capa 5.1.
+
+**Valida la capa 5.8 desde el lado de la oferta.** Su regla 6 y sus descalificadores son categóricos: si `antiguedad_meses < 12` o `figura_fiscal = informal`, **ninguna fintech del catálogo aplica** — se redirige a NAFIN, FINABIEN (Crédito a la Palabra de $25 000), fondos estatales como FOJAL o FONDESO, microcrédito, o regularización fiscal como PFAE. Es decir: **el negocio sin rastro digital no solo carece de datos, carece de oferta de crédito**. La capa 5.8 y el camino de formalización son la única ruta para ese segmento.
+
+### 12.3 Convergencia independiente en SIPRES
+
+Las investigaciones 03 y 05 llegaron por separado a la misma conclusión: **verificar la razón social en el SIPRES de CONDUSEF debe ser un paso obligatorio**, con el nombre fiscal y no el comercial. La 05 lo eleva a semáforo regulatorio —verde para banco múltiple, verde-amarillo para SOFIPO, amarillo para SOFOM ENR, **rojo si no aparece en SIPRES**— con una aclaración que conviene retener: *la ausencia de protección IPAB no es un riesgo cuando pides prestado, solo cuando depositas dinero*.
 
 ---
 
