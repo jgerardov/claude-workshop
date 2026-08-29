@@ -57,13 +57,13 @@ export default function ChatAsesor({ perfil, analisis }: { perfil: Perfil; anali
       </div>
       <div className="flex gap-2 border-t border-neutral-200 p-3">
         <input
-          className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+          className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
           placeholder="Pregúntale a tu asesor…"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && enviar()}
         />
-        <button onClick={enviar} disabled={cargando} className="rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-40">
+        <button onClick={enviar} disabled={cargando} className="rounded-md bg-green-500 px-4 py-2 text-sm font-semibold text-white hover:bg-green-600 disabled:opacity-40">
           Enviar
         </button>
       </div>

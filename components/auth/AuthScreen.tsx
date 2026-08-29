@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Usuario } from '@/lib/types'
 import { inputClass } from '../onboarding/fields'
+import BrandMark from '../brand/BrandMark'
 import GoogleButton from './GoogleButton'
 import GoogleAccountPicker from './GoogleAccountPicker'
 
@@ -11,13 +12,9 @@ type Modo = 'login' | 'signup'
 function Marca() {
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-700">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 17l5-6 4 4 7-9" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </div>
-      <h1 className="mt-3 text-xl font-semibold text-neutral-900">Asesor Financiero PyME</h1>
-      <p className="mt-1 text-sm text-neutral-500">Entiende tu negocio, tu régimen fiscal y tu mejor opción de financiamiento.</p>
+      <BrandMark size={44} />
+      <h1 className="mt-3 text-xl font-semibold text-neutral-900">Finanzza</h1>
+      <p className="mt-1 text-sm text-neutral-500">Tu dinero. Tus decisiones. Entiende tu negocio, tu régimen fiscal y tu mejor opción de financiamiento.</p>
     </div>
   )
 }
@@ -86,7 +83,7 @@ export default function AuthScreen({ onAutenticado }: { onAutenticado: (usuario:
           <button
             type="submit"
             disabled={cargando}
-            className="w-full rounded-md bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-60"
+            className="w-full rounded-md bg-green-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-600 disabled:opacity-60"
           >
             {cargando ? 'Entrando…' : modo === 'signup' ? 'Crear cuenta' : 'Iniciar sesión'}
           </button>

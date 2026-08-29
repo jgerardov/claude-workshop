@@ -35,7 +35,7 @@ export default function ConectarFuentes({ perfil, onContinuar }: { perfil: Perfi
                 <p className="text-xs text-neutral-500">{f.categoriaNombre}</p>
               </div>
               <div className="flex items-center gap-3">
-                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">✓ Conectado</span>
+                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">✓ Conectado</span>
                 <button type="button" onClick={() => quitar(i)} className="text-xs text-neutral-400 underline">
                   Quitar
                 </button>
@@ -58,7 +58,7 @@ export default function ConectarFuentes({ perfil, onContinuar }: { perfil: Perfi
         <button
           type="button"
           onClick={() => setAgregando(true)}
-          className="w-full rounded-md border border-dashed border-neutral-300 py-3 text-sm font-medium text-neutral-600 hover:border-emerald-600 hover:text-emerald-700"
+          className="w-full rounded-md border border-dashed border-neutral-300 py-3 text-sm font-medium text-neutral-600 hover:border-green-600 hover:text-green-700"
         >
           + Agregar fuente de datos
         </button>
@@ -68,7 +68,7 @@ export default function ConectarFuentes({ perfil, onContinuar }: { perfil: Perfi
         type="button"
         disabled={!listo}
         onClick={() => onContinuar(conectadas)}
-        className="w-full rounded-md bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-40"
+        className="w-full rounded-md bg-green-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-40"
       >
         Continuar
       </button>

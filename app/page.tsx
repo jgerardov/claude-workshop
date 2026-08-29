@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import AuthScreen from '@/components/auth/AuthScreen'
+import NavBar from '@/components/layout/NavBar'
 import OnboardingWizard from '@/components/onboarding/OnboardingWizard'
 import ConectarFuentes from '@/components/fuentes/ConectarFuentes'
 import IntegracionesMock from '@/components/integraciones/IntegracionesMock'
@@ -47,32 +48,35 @@ export default function Home() {
   }
 
   return (
-    <main className="px-4 py-10">
-      {usuario && paso !== 'auth' && (
-        <div className="mx-auto mb-6 flex max-w-2xl items-center justify-between text-sm text-neutral-500">
-          <span>Hola, {usuario.nombre}</span>
-          <button onClick={cerrarSesion} className="text-neutral-400 underline hover:text-neutral-600">
-            Cerrar sesión
-          </button>
-        </div>
-      )}
+    <>
+      {paso === 'onboarding' && <NavBar />}
+      <main className="px-4 py-10">
+        {usuario && paso !== 'auth' && (
+          <div className="mx-auto mb-6 flex max-w-2xl items-center justify-between text-sm text-neutral-500">
+            <span>Hola, {usuario.nombre}</span>
+            <button onClick={cerrarSesion} className="text-neutral-400 underline hover:text-neutral-600">
+              Cerrar sesión
+            </button>
+          </div>
+        )}
 
-      {paso === 'auth' && <AuthScreen onAutenticado={handleAutenticado} />}
+        {paso === 'auth' && <AuthScreen onAutenticado={handleAutenticado} />}
 
-      {paso === 'onboarding' && <OnboardingWizard onComplete={handlePerfilCompleto} />}
+        {paso === 'onboarding' && <OnboardingWizard onComplete={handlePerfilCompleto} />}
 
-      {paso === 'fuentes' && perfil && <ConectarFuentes perfil={perfil} onContinuar={handleFuentesConectadas} />}
+        {paso === 'fuentes' && perfil && <ConectarFuentes perfil={perfil} onContinuar={handleFuentesConectadas} />}
 
-      {paso === 'mock' && perfil && analisis && fuentes && (
-        <IntegracionesMock perfil={perfil} analisis={analisis} fuentes={fuentes} onDone={() => setPaso('resultados')} />
-      )}
+        {paso === 'mock' && perfil && analisis && fuentes && (
+          <IntegracionesMock perfil={perfil} analisis={analisis} fuentes={fuentes} onDone={() => setPaso('resultados')} />
+        )}
 
-      {paso === 'resultados' && perfil && analisis && (
-        <div className="space-y-6">
-          <ResultadosView analisis={analisis} onAbrirChat={() => setMostrarChat(true)} />
-          {mostrarChat && <ChatAsesor perfil={perfil} analisis={analisis} />}
-        </div>
-      )}
-    </main>
+        {paso === 'resultados' && perfil && analisis && (
+          <div className="space-y-6">
+            <ResultadosView analisis={analisis} onAbrirChat={() => setMostrarChat(true)} />
+            {mostrarChat && <ChatAsesor perfil={perfil} analisis={analisis} />}
+          </div>
+        )}
+      </main>
+    </>
   )
 }

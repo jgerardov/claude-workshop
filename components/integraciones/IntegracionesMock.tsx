@@ -99,7 +99,7 @@ export default function IntegracionesMock({
       <button
         onClick={onDone}
         disabled={!listo}
-        className="w-full rounded-md bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-40"
+        className="w-full rounded-md bg-green-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-40"
       >
         Ver mi análisis
       </button>

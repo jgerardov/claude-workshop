@@ -33,7 +33,7 @@ export default function GoogleAccountPicker({ onElegir, onCerrar }: { onElegir: 
           disabled={cargando}
           className="mt-5 flex w-full items-center gap-3 rounded-md border border-neutral-200 p-3 text-left hover:bg-neutral-50 disabled:opacity-60"
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-sm font-semibold text-white">D</span>
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-600 text-sm font-semibold text-white">D</span>
           <span>
             <span className="block text-sm font-medium text-neutral-900">Equipo Demo</span>
             <span className="block text-xs text-neutral-500">equipo.demo@gmail.com</span>

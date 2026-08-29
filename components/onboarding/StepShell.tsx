@@ -24,7 +24,7 @@ export default function StepShell({
       <div>
         <div className="mb-2 flex gap-1">
           {Array.from({ length: totalPasos }).map((_, i) => (
-            <div key={i} className={`h-1 flex-1 rounded-full ${i < paso ? 'bg-emerald-700' : 'bg-neutral-200'}`} />
+            <div key={i} className={`h-1 flex-1 rounded-full ${i < paso ? 'bg-green-500' : 'bg-neutral-200'}`} />
           ))}
         </div>
         <p className="text-xs font-medium text-neutral-400">Paso {paso} de {totalPasos}</p>
@@ -44,7 +44,7 @@ export default function StepShell({
           onClick={onSiguiente}
           disabled={siguienteDeshabilitado}
           type="button"
-          className="flex-1 rounded-md bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex-1 rounded-md bg-green-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {textoSiguiente}
         </button>

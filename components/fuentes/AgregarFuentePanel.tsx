@@ -60,7 +60,7 @@ export default function AgregarFuentePanel({
                 key={c.id}
                 type="button"
                 onClick={() => setCategoriaId(c.id)}
-                className="rounded-md border border-neutral-200 bg-white p-3 text-left hover:border-emerald-600"
+                className="rounded-md border border-neutral-200 bg-white p-3 text-left hover:border-green-600"
               >
                 <p className="text-sm font-medium text-neutral-900">{c.nombre}</p>
                 <p className="mt-0.5 text-xs text-neutral-500">{c.descripcion}</p>
@@ -89,7 +89,7 @@ export default function AgregarFuentePanel({
                   key={p.id}
                   type="button"
                   onClick={() => elegirProveedor(p.id)}
-                  className="rounded-md border border-neutral-200 bg-white p-3 text-left text-sm font-medium text-neutral-900 hover:border-emerald-600"
+                  className="rounded-md border border-neutral-200 bg-white p-3 text-left text-sm font-medium text-neutral-900 hover:border-green-600"
                 >
                   {p.nombre}
                 </button>
@@ -121,7 +121,7 @@ export default function AgregarFuentePanel({
             type="button"
             onClick={conectar}
             disabled={conectando || proveedor.campos.some((c) => !valores[c.key]?.trim())}
-            className="mt-3 rounded-md bg-emerald-700 px-3 py-1.5 text-sm font-semibold text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-40"
+            className="mt-3 rounded-md bg-green-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {conectando ? 'Conectando…' : `Conectar con ${proveedor.nombre}`}
           </button>

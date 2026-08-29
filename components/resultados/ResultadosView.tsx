@@ -16,9 +16,9 @@ export default function ResultadosView({ analisis, onAbrirChat }: { analisis: An
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
-      <div className="rounded-lg bg-emerald-700 p-5 text-white">
-        <p className="text-sm font-medium uppercase tracking-wide text-emerald-100">Diagnóstico</p>
-        <p className="mt-1 text-lg">{analisis.diagnostico}</p>
+      <div className="rounded-lg bg-navy p-5 text-white">
+        <p className="text-sm font-medium uppercase tracking-wide text-green-300">Diagnóstico</p>
+        <p className="mt-1 text-lg font-medium">{analisis.diagnostico}</p>
       </div>
 
       <Card title="Régimen fiscal recomendado">
@@ -65,7 +65,7 @@ export default function ResultadosView({ analisis, onAbrirChat }: { analisis: An
             )}
 
             <p className="border-t border-neutral-100 pt-3">
-              Rango estimado de monto autorizable: <strong>{fmt(financiamiento.estimadoBajoMxn)} – {fmt(financiamiento.estimadoAltoMxn)}</strong> MXN. Es una estimación, no una oferta.
+              Rango estimado de monto autorizable: <strong className="font-semibold">{fmt(financiamiento.estimadoBajoMxn)} – {fmt(financiamiento.estimadoAltoMxn)}</strong> MXN. Es una estimación, no una oferta.
             </p>
 
             {financiamiento.advertenciaMercadoCredito && (
@@ -88,7 +88,7 @@ export default function ResultadosView({ analisis, onAbrirChat }: { analisis: An
 
       <p className="text-xs text-neutral-400">{analisis.disclaimer}</p>
 
-      <button onClick={onAbrirChat} className="w-full rounded-md bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-neutral-800">
+      <button onClick={onAbrirChat} className="w-full rounded-md bg-green-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-600">
         Hablar con tu asesor
       </button>
     </div>
